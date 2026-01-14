@@ -5,6 +5,8 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Getter @Setter @NoArgsConstructor @RequiredArgsConstructor @ToString
@@ -64,5 +66,9 @@ public class Medicament {
 	@ToString.Exclude
 
 	private Categorie categorie ;
+
+	@ToString.Exclude
+	@OneToMany(cascade = {CascadeType.ALL}, mappedBy = "medicament")
+	private List<Ligne> lignes = new LinkedList<>();
 
 }
