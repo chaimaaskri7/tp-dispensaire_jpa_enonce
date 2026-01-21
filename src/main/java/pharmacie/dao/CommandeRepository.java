@@ -48,4 +48,29 @@ public interface CommandeRepository extends JpaRepository<Commande, Integer> {
      */
     @Query("SELECT c FROM Commande c WHERE c.SaisieLeDate > :date")
     List<Commande> findBySaisieLeeDateAfter(@Param("date") java.time.LocalDate date);
+
+    /**
+     * Calcule le nombre total d'articles (lignes) déjà commandés par un dispensaire
+     * pour les commandes qui ont déjà été envoyées (Envoyeele est renseigné)
+     * Diapositive 51 du support de cours
+     * 
+     * @param dispensaireCode le code du dispensaire
+     * @return le nombre total d'articles commandés
+     */
+    @Query("SELECT COALESCE(SUM(l.Quantite), 0) FROM Ligne l " +
+            "WHERE l.commande.dispensaire.Code = :dispensaireCode " +
+            "AND l.commande.Envoyeele IS NOT NULL")
+    Long countArticlesCommandesByDispensaire(@Param("dispensaireCode") Integer dispensaireCode);
+
+    /**
+     * Trouve toutes les commandes en cours pour un dispensaire
+     * Une commande est en cours si sa date d'envoi (Envoyeele) n'est pas renseignée
+     * 
+     * @param dispensaireCode le code du dispensaire
+     * @return Une liste de commandes en cours
+     */
+    @Query("SELECT c FROM Commande c " +
+            "WHERE c.dispensaire.Code = :dispensaireCode " +
+            "AND c.Envoyeele IS NULL")
+    List<Commande> findCommandesEnCoursByDispensaire(@Param("dispensaireCode") Integer dispensaireCode);
 }

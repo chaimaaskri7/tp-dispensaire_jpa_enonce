@@ -10,7 +10,11 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 @Entity
-@Getter @Setter @NoArgsConstructor @RequiredArgsConstructor @ToString
+@Getter
+@Setter
+@NoArgsConstructor
+@RequiredArgsConstructor
+@ToString
 public class Categorie {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +23,7 @@ public class Categorie {
 
 	@NonNull
 	@Size(min = 1, max = 255)
-	@Column(unique=true, length = 255)
+	@Column(unique = true, length = 255)
 	@NotBlank // pour éviter les libellés vides
 	private String libelle;
 
@@ -28,8 +32,10 @@ public class Categorie {
 	private String description;
 
 	@ToString.Exclude
-	// CascadeType.ALL signifie que toutes les opérations CRUD sur la catégorie sont également appliquées à ses médicaments
-	@OneToMany(cascade = {CascadeType.ALL}, mappedBy = "categorie")
+	// CascadeType.PERSIST/MERGE pour éviter la suppression en cascade
+	// orphanRemoval=false pour autoriser la suppression seulement si pas de
+	// médicaments
+	@OneToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, mappedBy = "categorie", orphanRemoval = false)
 	private List<Medicament> medicaments = new LinkedList<>();
 
 }
